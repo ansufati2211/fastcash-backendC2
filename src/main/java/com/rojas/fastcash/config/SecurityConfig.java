@@ -37,7 +37,6 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
                 config.setAllowedOrigins(List.of(
-                    "https://fastcash-frontend-production.up.railway.app",
                     "https://ansufati2211.github.io",
                     "http://localhost:5500",
                     "http://127.0.0.1:5500",
