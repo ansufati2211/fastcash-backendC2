@@ -14,11 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
-@Slf4j // Anotación para manejo profesional de Logs
+@Slf4j
 @Service
 public class CajaService {
 
@@ -36,13 +35,12 @@ public class CajaService {
             throw new RuntimeException("⚠️ Ya tienes una caja ABIERTA. Debes cerrar la actual antes de abrir una nueva.");
         }
 
-        String sql = "SELECT sp_caja_abrir(?, ?)";
-        BigDecimal saldo = request.getSaldoInicial() != null ? request.getSaldoInicial() : BigDecimal.ZERO;
+        // Ya NO pide Saldo Inicial, solo el UsuarioID
+        String sql = "SELECT sp_caja_abrir(?)";
 
         try {
             jdbcTemplate.execute(sql, (PreparedStatement ps) -> {
                 ps.setInt(1, request.getUsuarioID());
-                ps.setBigDecimal(2, saldo);
                 return ps.execute();
             });
         } catch (Exception e) {
@@ -58,11 +56,11 @@ public class CajaService {
             throw new RuntimeException("⚠️ No tienes una caja abierta para cerrar.");
         }
 
-        String sql = "SELECT * FROM sp_caja_cerrar(?::integer, ?::numeric)";
-        BigDecimal saldoFinal = request.getSaldoFinalReal() != null ? request.getSaldoFinalReal() : BigDecimal.ZERO;
+        // Ya NO envía el saldo final, solo el UsuarioID
+        String sql = "SELECT * FROM sp_caja_cerrar(?::integer)";
 
         try {
-            return jdbcTemplate.queryForMap(sql, request.getUsuarioID(), saldoFinal);
+            return jdbcTemplate.queryForMap(sql, request.getUsuarioID());
         } catch (Exception e) {
             log.error("❌ Error Cierre Caja para usuario {}: {}", request.getUsuarioID(), e.getMessage(), e);
             throw new RuntimeException("Error al cerrar caja: " + e.getMessage());
@@ -70,7 +68,7 @@ public class CajaService {
     }
 
     // =========================================================================
-    // LÓGICA DE CIERRE AUTOMÁTICO
+    // LÓGICA DE CIERRE AUTOMÁTICO (Sin cambios, funciona perfecto)
     // =========================================================================
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "America/Lima")

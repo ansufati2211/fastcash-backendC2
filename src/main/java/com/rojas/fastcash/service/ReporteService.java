@@ -82,14 +82,18 @@ public class ReporteService {
             // POSTGRES: SELECT * FROM function(...)
             return jdbcTemplate.queryForMap("SELECT * FROM sp_operacion_obtenercierreactual(?)", usuarioID);
         } catch (Exception e) {
+            // En caso de que no haya caja abierta, devolvemos el esquema limpio
             Map<String, Object> vacio = new HashMap<>();
-            vacio.put("SaldoInicial", 0); vacio.put("VentasEfectivo", 0); vacio.put("TotalVendido", 0);
+            vacio.put("VentasQR", 0);
+            vacio.put("VentasTransferencia", 0);
+            vacio.put("VentasTarjeta", 0);
+            vacio.put("TotalVendido", 0);
             vacio.put("TurnoNombre", "GENERAL");
             return vacio;
         }
     }
 
-// 5. OBTENER DETALLE DE TRANSACCIONES DEL CIERRE ACTUAL (OPTIMIZADO CON ENTIDAD Y LOTE)
+// 5. OBTENER DETALLE DE TRANSACCIONES DEL CIERRE ACTUAL (INCLUYENDO TITULAR)
     public List<Map<String, Object>> obtenerDetalleCierreActual(Integer usuarioID) {
         String sql = "SELECT v.fechaemision, p.formapago, " +
                      "COALESCE(e.nombre, '-') AS entidadbancaria, " +
@@ -99,6 +103,8 @@ public class ReporteService {
                      "    WHEN p.ultimos4digitos IS NOT NULL AND p.ultimos4digitos <> '' THEN '***' || p.ultimos4digitos " +
                      "    ELSE '-' " +
                      "END AS numerooperacion, " +
+                     // NUEVO CAMPO: Traemos el titular de la cuenta
+                     "COALESCE(p.nombretitular, '-') AS titular, " +
                      "p.montopagado " +
                      "FROM ventas v " +
                      "JOIN pagosregistrados p ON v.ventaid = p.ventaid " +

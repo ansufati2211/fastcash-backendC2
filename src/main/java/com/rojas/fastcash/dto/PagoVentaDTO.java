@@ -17,4 +17,8 @@ public class PagoVentaDTO {
 
     @JsonProperty("NumOperacion")
     private String numOperacion;
+
+    // NUEVO CAMPO PARA TRANSFERENCIAS
+    @JsonProperty("NombreTitular")
+    private String nombreTitular;
 }
