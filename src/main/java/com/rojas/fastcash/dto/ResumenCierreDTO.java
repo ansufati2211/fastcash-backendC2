@@ -25,6 +25,9 @@ public class ResumenCierreDTO {
     @JsonProperty("ventasDigital")
     private BigDecimal ventasDigital;
 
+    @JsonProperty("ventasTransferencia")
+    private BigDecimal ventasTransferencia;
+
     @JsonProperty("ventasTarjeta")
     private BigDecimal ventasTarjeta;
 

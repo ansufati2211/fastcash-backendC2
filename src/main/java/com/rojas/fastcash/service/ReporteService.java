@@ -19,7 +19,8 @@ public class ReporteService {
         Integer uidParam = (usuarioID != null && usuarioID > 0) ? usuarioID : null;
 
         // POSTGRES: SELECT * FROM function(...)
-        String sql = "SELECT * FROM sp_reporte_detalladoventas(?, ?, ?, NULL)";
+        // SE AGREGA cliente2.
+        String sql = "SELECT * FROM cliente2.sp_reporte_detalladoventas(?, ?, ?, NULL)";
         return jdbcTemplate.queryForList(sql, Date.valueOf(inicio), Date.valueOf(fin), uidParam);
     }
 
@@ -29,7 +30,8 @@ public class ReporteService {
         if (fin == null || fin.isEmpty()) fin = LocalDate.now().toString();
 
         // POSTGRES: SELECT * FROM function(...)
-        return jdbcTemplate.queryForList("SELECT * FROM sp_reporte_porcaja(?, ?, ?)", Date.valueOf(inicio), Date.valueOf(fin), usuarioID);
+        // SE AGREGA cliente2.
+        return jdbcTemplate.queryForList("SELECT * FROM cliente2.sp_reporte_porcaja(?, ?, ?)", Date.valueOf(inicio), Date.valueOf(fin), usuarioID);
     }
 
     // 3. DASHBOARD DE GRÁFICOS (Compatible Postgres)
@@ -46,15 +48,17 @@ public class ReporteService {
         }
 
         // SQL CORREGIDO: COALESCE y TO_CHAR
+        // SE AGREGA cliente2. A LAS TABLAS
         String sqlCat = "SELECT COALESCE(c.Nombre, 'Sin Categoría') as label, COALESCE(SUM(vd.Monto), 0) as value " +
-                        "FROM Ventas v " +
-                        "LEFT JOIN VentaDetalle vd ON v.VentaID = vd.VentaID " +
-                        "LEFT JOIN CategoriasVenta c ON vd.CategoriaID = c.CategoriaID " +
+                        "FROM cliente2.Ventas v " +
+                        "LEFT JOIN cliente2.VentaDetalle vd ON v.VentaID = vd.VentaID " +
+                        "LEFT JOIN cliente2.CategoriasVenta c ON vd.CategoriaID = c.CategoriaID " +
                         "WHERE TO_CHAR(v.FechaEmision, 'YYYY-MM-DD') = TO_CHAR(?::date, 'YYYY-MM-DD') " +
                         "  AND v.Estado IN ('PAGADO', 'COMPLETADO') " + filtroUsuario + "GROUP BY c.Nombre";
 
+        // SE AGREGA cliente2. A LAS TABLAS
         String sqlPago = "SELECT COALESCE(p.FormaPago, 'Sin Pago') as label, COALESCE(SUM(p.MontoPagado), 0) as value " +
-                         "FROM Ventas v LEFT JOIN PagosRegistrados p ON v.VentaID = p.VentaID " +
+                         "FROM cliente2.Ventas v LEFT JOIN cliente2.PagosRegistrados p ON v.VentaID = p.VentaID " +
                          "WHERE TO_CHAR(v.FechaEmision, 'YYYY-MM-DD') = TO_CHAR(?::date, 'YYYY-MM-DD') " +
                          "  AND v.Estado IN ('PAGADO', 'COMPLETADO') " + filtroUsuario + "GROUP BY p.FormaPago";
 
@@ -80,7 +84,8 @@ public class ReporteService {
     public Map<String, Object> obtenerCierreActual(Integer usuarioID) {
         try {
             // POSTGRES: SELECT * FROM function(...)
-            return jdbcTemplate.queryForMap("SELECT * FROM sp_operacion_obtenercierreactual(?)", usuarioID);
+            // SE AGREGA cliente2.
+            return jdbcTemplate.queryForMap("SELECT * FROM cliente2.sp_operacion_obtenercierreactual(?)", usuarioID);
         } catch (Exception e) {
             // En caso de que no haya caja abierta, devolvemos el esquema limpio
             Map<String, Object> vacio = new HashMap<>();
@@ -95,6 +100,7 @@ public class ReporteService {
 
 // 5. OBTENER DETALLE DE TRANSACCIONES DEL CIERRE ACTUAL (INCLUYENDO TITULAR)
     public List<Map<String, Object>> obtenerDetalleCierreActual(Integer usuarioID) {
+        // SE AGREGA cliente2. A TODAS LAS TABLAS
         String sql = "SELECT v.fechaemision, p.formapago, " +
                      "COALESCE(e.nombre, '-') AS entidadbancaria, " +
                      "CASE " +
@@ -106,10 +112,10 @@ public class ReporteService {
                      // NUEVO CAMPO: Traemos el titular de la cuenta
                      "COALESCE(p.nombretitular, '-') AS titular, " +
                      "p.montopagado " +
-                     "FROM ventas v " +
-                     "JOIN pagosregistrados p ON v.ventaid = p.ventaid " +
-                     "LEFT JOIN entidadesfinancieras e ON p.entidadfinancieraid = e.entidadid " +
-                     "JOIN sesionescaja sc ON sc.usuarioid = v.usuarioid AND sc.estado = 'ABIERTO' " +
+                     "FROM cliente2.ventas v " +
+                     "JOIN cliente2.pagosregistrados p ON v.ventaid = p.ventaid " +
+                     "LEFT JOIN cliente2.entidadesfinancieras e ON p.entidadfinancieraid = e.entidadid " +
+                     "JOIN cliente2.sesionescaja sc ON sc.usuarioid = v.usuarioid AND sc.estado = 'ABIERTO' " +
                      "WHERE v.usuarioid = ? AND v.estado IN ('PAGADO', 'COMPLETADO') " +
                      "AND v.fechaemision >= sc.fechainicio " +
                      "ORDER BY v.fechaemision ASC";

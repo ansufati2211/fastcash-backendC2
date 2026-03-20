@@ -40,6 +40,7 @@ public class SecurityConfig {
                     "https://fastcash-frontend-production.up.railway.app",
                     "https://ansufati2211.github.io",
                     "http://localhost:5500",
+                    "http://127.0.0.1:5500",
                     "http://127.0.0.2:5500"
                 ));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

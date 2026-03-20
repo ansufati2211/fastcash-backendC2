@@ -36,7 +36,8 @@ public class CajaService {
         }
 
         // Ya NO pide Saldo Inicial, solo el UsuarioID
-        String sql = "SELECT sp_caja_abrir(?)";
+        // SE AGREGA cliente2.
+        String sql = "SELECT cliente2.sp_caja_abrir(?)";
 
         try {
             jdbcTemplate.execute(sql, (PreparedStatement ps) -> {
@@ -57,7 +58,8 @@ public class CajaService {
         }
 
         // Ya NO envía el saldo final, solo el UsuarioID
-        String sql = "SELECT * FROM sp_caja_cerrar(?::integer)";
+        // SE AGREGA cliente2.
+        String sql = "SELECT * FROM cliente2.sp_caja_cerrar(?::integer)";
 
         try {
             return jdbcTemplate.queryForMap(sql, request.getUsuarioID());
@@ -83,7 +85,8 @@ public class CajaService {
 
     private void ejecutarLimpiezaCajas(String origen) {
         try {
-            jdbcTemplate.execute("SELECT * FROM sp_caja_cierreautomatico()");
+            // SE AGREGA cliente2.
+            jdbcTemplate.execute("SELECT * FROM cliente2.sp_caja_cierreautomatico()");
             log.info("✅ [AUTO-CIERRE] Limpieza completada (Origen: {}).", origen);
         } catch (Exception e) {
             log.error("❌ [AUTO-CIERRE] Error ejecutando limpieza (Origen: {}): {}", origen, e.getMessage(), e);
