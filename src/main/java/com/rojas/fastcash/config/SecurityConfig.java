@@ -40,7 +40,10 @@ public class SecurityConfig {
                     "https://ansufati2211.github.io",
                     "http://localhost:5500",
                     "http://127.0.0.1:5500",
-                    "http://127.0.0.2:5500"
+                    "http://127.0.0.2:5500",
+                    "http://localhost:5501",   // <--- Agrega estos 3 nuevos
+                    "http://127.0.0.1:5501",   // <---
+                    "http://127.0.0.2:5501"    // <---
                 ));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
