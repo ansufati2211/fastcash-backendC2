@@ -48,6 +48,8 @@ public class AuthService {
         String rolNombre = (usuario.getRol() != null) ? usuario.getRol().getNombre() : "SIN_ROL";
         respuesta.put("Rol", rolNombre);
         
+        respuesta.put("Token", "token-temporal-hasta-implementar-jwt");
+        
         respuesta.put("Mensaje", "Login Exitoso");
 
         return respuesta;

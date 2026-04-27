@@ -41,12 +41,12 @@ public class SecurityConfig {
                     "http://localhost:5500",
                     "http://127.0.0.1:5500",
                     "http://127.0.0.2:5500",
-                    "http://localhost:5501",   // <--- Agrega estos 3 nuevos
-                    "http://127.0.0.1:5501",   // <---
+                    "http://localhost:5501",   
+                    "http://127.0.0.1:5501",   
                     "http://127.0.0.2:5501",
                     "http://localhost:5173",
                     "http://127.0.0.1:5173",
-                    "https://Jesus9Rojas.github.io"   // <---
+                    "https://Jesus9Rojas.github.io"  
                 ));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
